@@ -51,8 +51,8 @@
         // API Google Sheets - Récupérer les données
         function init() {
             gapi.client.init({
-                apiKey: 'YOUR_GOOGLE_API_KEY',
-                clientId: 'YOUR_GOOGLE_CLIENT_ID',
+                apiKey: 'AIzaSyDGGHn1u1XJ74C8S9rGPb-qGszhpFjSU8s',
+                clientId: '1013076269269-rebqrm931g5reepsbaqjc8lah4bk9gvs.apps.googleusercontent.com',
                 scope: 'https://www.googleapis.com/auth/spreadsheets.readonly',
             }).then(function() {
                 loadData();
@@ -60,7 +60,7 @@
         }
 
         function loadData() {
-            const spreadsheetId = 'YOUR_SPREADSHEET_ID'; // L'ID de votre feuille Google Sheets
+            const spreadsheetId = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg'; // L'ID de votre feuille Google Sheets
             const range = 'Planning!A1:F'; // Plage de données contenant les missions
 
             gapi.client.sheets.spreadsheets.values.get({
