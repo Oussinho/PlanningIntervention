@@ -6,7 +6,7 @@
     <title>Intervenant</title>
     <script>
         // Vérifie si l'utilisateur est connecté
-        if (!localStorage.getItem('userEmail') || localStorage.getItem('userRole') !== 'admin') {
+        if (!localStorage.getItem('userEmail') || localStorage.getItem('userRole') !== 'Technicien') {
             // Si non connecté ou rôle incorrect, redirige vers la page de login
             window.location.href = "login.html";
         }
