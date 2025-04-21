@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Planning Intervention</title>
+  <!-- Lien Tabletop.js stable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.6.0/tabletop.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+
+<h1>📋 Planning des Interventions</h1>
+<table id="dataTable">
+  <thead><tr id="headerRow"></tr></thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  // URL du Google Sheet publié (mode CSV ou non, Tabletop s’en charge)
+  const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/edit?usp=sharing';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    Tabletop.init({
+      key: publicSpreadsheetUrl,
+      simpleSheet: true,
+      callback: function(data) {
+        const table = document.getElementById("dataTable");
+        const headerRow = document.getElementById("headerRow");
+        const tbody = table.querySelector("tbody");
+
+        const headers = Object.keys(data[0]);
+        headers.forEach(label => {
+          const th = document.createElement("th");
+          th.textContent = label;
+          headerRow.appendChild(th);
+        });
+
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          headers.forEach(key => {
+            const td = document.createElement("td");
+            td.textContent = row[key] || "";
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
+
+
