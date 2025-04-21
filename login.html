@@ -49,5 +49,22 @@
                     alert("Erreur de connexion : Email ou mot de passe incorrect.");
                 }
             }).fail(function() {
-                alert("Erreur lors de la récupération des données.
+                alert("Erreur lors de la récupération des données. Veuillez réessayer.");
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>📋 Planning des Interventions - Connexion</h1>
+    
+    <form id="loginForm" onsubmit="event.preventDefault(); login();">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" autocomplete="email" required><br><br>
 
+        <label for="password">Mot de passe:</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required><br><br>
+
+        <button type="submit">Se connecter</button>
+    </form>
+</body>
+</html>
