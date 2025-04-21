@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>📋 Planning des Interventions Test</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>📋 Planning des Interventions</title>
 </head>
 <body>
   <h1>📋 Planning des Interventions</h1>
-  <div id="table_div">Chargement...</div>
+  <div id="table-container">Chargement...</div>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load('current', {'packages':['table']});
-    google.charts.setOnLoadCallback(drawTable);
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?sheet=Interventions';
 
-    function drawTable() {
-      const queryString = encodeURIComponent('SELECT A, B, C, D, E, F');
-      const dataSourceUrl = 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?sheet=Feuille1&headers=1&tq=' + queryString;
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(data => {
+        // Supprimer le texte inutile au début de la réponse
+        const jsonData = JSON.parse(data.substr(47).slice(0, -2));
+        const rows = jsonData.table.rows;
 
-      const query = new google.visualization.Query(dataSourceUrl);
-      query.send(function(response) {
-        if (response.isError()) {
-          document.getElementById('table_div').innerText = 'Erreur de chargement : ' + response.getMessage();
-          return;
-        }
-        const data = response.getDataTable();
-        const table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(data, {showRowNumber: true, width: '100%', height: 'auto'});
+        let html = '<table border="1" cellpadding="5" cellspacing="0"><thead><tr>';
+        jsonData.table.cols.forEach(col => {
+          html += `<th>${col.label}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        rows.forEach(row => {
+          html += '<tr>';
+          row.c.forEach(cell => {
+            html += `<td>${cell ? cell.v : ''}</td>`;
+          });
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('table-container').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('table-container').innerHTML = '❌ Erreur de chargement';
+        console.error('Erreur :', err);
       });
-    }
   </script>
 </body>
 </html>
