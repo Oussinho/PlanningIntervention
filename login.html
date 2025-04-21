@@ -24,25 +24,25 @@
     <script>
         // Chargement des données depuis Google Sheets
         Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
-            callback: function(data, tabletop) {
-                console.log("Données utilisateur chargées : ", data); // Vérification dans la console
+    key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
+    callback: function(data, tabletop) {
+        console.log("Données utilisateur chargées : ", data); // Vérification dans la console
 
-                // Assure-toi que les données sont sous la bonne forme
-                if (!Array.isArray(data) || data.length === 0) {
-                    console.error("Les données sont vides ou mal formatées !");
-                    return;
-                }
+        // Assure-toi que les données sont sous la bonne forme
+        if (!Array.isArray(data) || data.length === 0) {
+            console.error("Les données sont vides ou mal formatées !");
+            return;
+        }
 
-                document.getElementById('loginForm').onsubmit = function(event) {
-                    event.preventDefault(); // Empêcher l'envoi classique du formulaire
-                    const email = document.getElementById('email').value; // Récupération de l'email
-                    const password = document.getElementById('password').value; // Récupération du mot de passe
-                    checkCredentials(email, password, data); // Vérification des identifiants
-                };
-            },
-            simpleSheet: true
-        });
+        document.getElementById('loginForm').onsubmit = function(event) {
+            event.preventDefault(); // Empêcher l'envoi classique du formulaire
+            const email = document.getElementById('email').value; // Récupération de l'email
+            const password = document.getElementById('password').value; // Récupération du mot de passe
+            checkCredentials(email, password, data); // Vérification des identifiants
+        };
+    },
+    simpleSheet: true
+});
 
         // Fonction pour vérifier les identifiants
         function checkCredentials(email, password, data) {
