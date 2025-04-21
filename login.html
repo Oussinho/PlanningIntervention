@@ -5,15 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Planning des Interventions</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #34495e;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
     <script type="text/javascript">
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const spreadsheetId = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg'; // Lien de votre Google Sheets
-            const sheetName = 'Utilisateurs'; // Nom de la feuille
-            const range = sheetName + '!A2:D'; // Plage des données (Email, Nom, Role, Mot de passe)
-            const apiKey = 'AIzaSyDGGHn1u1XJ74C8S9rGPb-qGszhpFjSU8s'; // Remplacez par votre clé API Google
+            const spreadsheetId = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg';
+            const sheetName = 'Utilisateurs';
+            const range = sheetName + '!A2:D';
+            const apiKey = 'AIzaSyDGGHn1u1XJ74C8S9rGPb-qGszhpFjSU8s';
 
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
 
@@ -21,28 +94,24 @@
                 let isAuthenticated = false;
                 let userRole = "";
 
-                // Vérifier si l'email et le mot de passe correspondent à un utilisateur dans la feuille
                 for (let i = 0; i < data.values.length; i++) {
                     const row = data.values[i];
-                    const storedEmail = row[0];  // Email est en colonne A
-                    const storedPassword = row[3];  // Mot de passe est en colonne D
+                    const storedEmail = row[0];  // Email en colonne A
+                    const storedPassword = row[3];  // Mot de passe en colonne D
 
                     if (storedEmail === email && storedPassword === password) {
                         isAuthenticated = true;
-                        userRole = row[2]; // Récupérer le rôle (colonne C)
+                        userRole = row[2]; // Récupérer le rôle
                         break;
                     }
                 }
 
-                // Si l'utilisateur est authentifié
                 if (isAuthenticated) {
-                    // Stocker les informations de l'utilisateur dans localStorage
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userRole', userRole);
 
                     alert(`Connexion réussie ! Rôle: ${userRole}`);
-                    
-                    // Rediriger en fonction du rôle
+
                     if (userRole === 'Admin') {
                         window.location.href = 'admin_dashboard.html';
                     } else if (userRole === 'Technicien') {
@@ -57,19 +126,34 @@
                 alert("Erreur lors de la récupération des données. Veuillez réessayer.");
             });
         }
+
+        function resetPassword() {
+            const email = prompt("Entrez votre email pour réinitialiser votre mot de passe:");
+            if (email) {
+                // Envoyer un email à l'admin pour l'informer de la demande de réinitialisation
+                alert("Un email a été envoyé à l'admin pour réinitialiser votre mot de passe.");
+                // Envoi de l'email à l'admin peut être fait ici avec un service de backend ou API
+            }
+        }
     </script>
 </head>
 <body>
-    <h1>📋 Planning des Interventions - Connexion</h1>
-    
-    <form id="loginForm" onsubmit="event.preventDefault(); login();">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" autocomplete="email" required><br><br>
+    <div class="login-container">
+        <h1>📋 Planning des Interventions - Connexion</h1>
+        
+        <form id="loginForm" onsubmit="event.preventDefault(); login();">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" autocomplete="email" required><br>
 
-        <label for="password">Mot de passe:</label>
-        <input type="password" id="password" name="password" autocomplete="current-password" required><br><br>
+            <label for="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required><br>
 
-        <button type="submit">Se connecter</button>
-    </form>
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" onclick="resetPassword()">Mot de passe oublié ?</a>
+        </div>
+    </div>
 </body>
 </html>
