@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <script>
+        // Vérifie si l'utilisateur est connecté
+        if (!localStorage.getItem('userEmail') || localStorage.getItem('userRole') !== 'admin') {
+            // Si non connecté ou rôle incorrect, redirige vers la page de login
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+<body>
+    <h1>Page Admin</h1>
+    <!-- Contenu de la page admin -->
+</body>
+</html>
