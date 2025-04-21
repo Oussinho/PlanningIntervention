@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Technicien</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script> <!-- Ajouter l'API Google Sheets -->
+    <script src="https://apis.google.com/js/api.js"></script> <!-- Google Sheets API -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,29 +46,25 @@
         }
     </style>
     <script>
-        const technicienConnecte = "TECH001"; // Exemple de Tech ID du technicien connecté
+        const technicienId = localStorage.getItem("technicienId");
 
-        // API Google Sheets - Récupérer les données
         function init() {
             gapi.client.init({
                 apiKey: 'AIzaSyDGGHn1u1XJ74C8S9rGPb-qGszhpFjSU8s',
                 clientId: '1013076269269-rebqrm931g5reepsbaqjc8lah4bk9gvs.apps.googleusercontent.com',
                 scope: 'https://www.googleapis.com/auth/spreadsheets.readonly',
-            }).then(function() {
-                loadData();
-            });
+            }).then(loadData);
         }
 
         function loadData() {
-            const spreadsheetId = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg'; // L'ID de votre feuille Google Sheets
-            const range = 'Planning!A1:F'; // Plage de données contenant les missions
-
+            const spreadsheetId = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg';
+            const range = 'Planning!A1:G'; // colonnes A à G
             gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: spreadsheetId,
                 range: range,
             }).then(function(response) {
                 const rows = response.result.values;
-                if (rows.length) {
+                if (rows && rows.length > 1) {
                     afficherPlanning(rows);
                 } else {
                     console.log("Aucune donnée trouvée.");
@@ -76,26 +72,28 @@
             });
         }
 
-        // Affichage du planning filtré par technicien
         function afficherPlanning(rows) {
             let tableHtml = '';
-            rows.forEach((row, index) => {
-                // La première ligne contient les en-têtes, donc on commence à partir de l'index 1
-                if (index === 0) return;
+            const headers = rows[0]; // première ligne = entêtes
+            const dataRows = rows.slice(1);
 
-                const [techID, date, mission, heure, lieu, statut] = row;
+            dataRows.forEach(row => {
+                const [id, nomTech, date, heureDebut, heureFin, interventionID, finPrevue] = row;
 
-                // Vérifier si le Tech ID correspond à celui du technicien connecté
-                if (techID === technicienConnecte) {
+                if (id === technicienId) {
                     tableHtml += `
                         <tr>
-                            <td>${date}</td>
-                            <td>${mission}</td>
-                            <td>${heure}</td>
-                            <td>${lieu}</td>
-                            <td>${statut}</td>
-                            <td><button class="button" onclick="confirmerMission('${date}')">Confirmer</button></td>
-                            <td><button class="button" onclick="refuserMission('${date}')">Refuser</button></td>
+                            <td>${date || ''}</td>
+                            <td>${heureDebut || ''}</td>
+                            <td>${heureFin || ''}</td>
+                            <td>${interventionID || ''}</td>
+                            <td>${finPrevue || ''}</td>
+                            <td>
+                                <button class="button" onclick="confirmerMission('${interventionID}')">Confirmer</button>
+                            </td>
+                            <td>
+                                <button class="button" onclick="refuserMission('${interventionID}')">Refuser</button>
+                            </td>
                         </tr>
                     `;
                 }
@@ -104,17 +102,14 @@
             $('#planning-table-body').html(tableHtml);
         }
 
-        // Fonction pour confirmer une mission
-        function confirmerMission(date) {
-            alert('Mission du ' + date + ' confirmée !');
+        function confirmerMission(interventionId) {
+            alert('Mission ' + interventionId + ' confirmée !');
         }
 
-        // Fonction pour refuser une mission
-        function refuserMission(date) {
-            alert('Mission du ' + date + ' refusée.');
+        function refuserMission(interventionId) {
+            alert('Mission ' + interventionId + ' refusée.');
         }
 
-        // Fonction pour afficher les indisponibilités
         function afficherIndisponibilite() {
             const debut = document.getElementById('indisponibilite-debut').value;
             const fin = document.getElementById('indisponibilite-fin').value;
@@ -129,7 +124,6 @@
         $(document).ready(function() {
             gapi.load('client:auth2', init);
 
-            // Lorsque l'utilisateur soumet le formulaire d'indisponibilité
             $('#indisponibilite-form').on('submit', function(event) {
                 event.preventDefault();
                 afficherIndisponibilite();
@@ -145,16 +139,15 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Mission</th>
-                <th>Heure</th>
-                <th>Lieu</th>
-                <th>Statut</th>
-                <th>Actions</th>
-                <th>Actions</th>
+                <th>Heure Début</th>
+                <th>Heure Fin</th>
+                <th>Intervention ID</th>
+                <th>Fin Prévue</th>
+                <th colspan="2">Actions</th>
             </tr>
         </thead>
         <tbody id="planning-table-body">
-            <!-- Les missions seront injectées ici via JavaScript -->
+            <!-- Données planning ici -->
         </tbody>
     </table>
 
