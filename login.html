@@ -19,36 +19,46 @@
         <button type="submit">Se connecter</button>
     </form>
 
-    <!-- Lien vers la feuille Google Sheets -->
-    <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0"></script>
     <script>
-        // Chargement des données depuis Google Sheets
-        Tabletop.init({
-    key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
-    callback: function(data, tabletop) {
-        console.log("Données utilisateur chargées : ", data); // Vérification dans la console
-
-        // Assure-toi que les données sont sous la bonne forme
-        if (!Array.isArray(data) || data.length === 0) {
-            console.error("Les données sont vides ou mal formatées !");
-            return;
+        // Fonction pour charger les données depuis Google Sheets en CSV
+        async function loadData() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs';
+            const response = await fetch(sheetUrl);
+            const csvText = await response.text();
+            const data = csvToArray(csvText);
+            console.log(data); // Affiche les données pour vérifier
+            return data;
         }
 
-        document.getElementById('loginForm').onsubmit = function(event) {
-            event.preventDefault(); // Empêcher l'envoi classique du formulaire
-            const email = document.getElementById('email').value; // Récupération de l'email
-            const password = document.getElementById('password').value; // Récupération du mot de passe
-            checkCredentials(email, password, data); // Vérification des identifiants
-        };
-    },
-    simpleSheet: true
-});
+        // Convertir le CSV en tableau d'objets
+        function csvToArray(csv) {
+            const rows = csv.split('\n');
+            const headers = rows[0].split(',');
+            const result = rows.slice(1).map(row => {
+                const values = row.split(',');
+                let obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = values[index];
+                });
+                return obj;
+            });
+            return result;
+        }
+
+        // Charger les données et définir l'événement du formulaire
+        loadData().then(data => {
+            document.getElementById('loginForm').onsubmit = function(event) {
+                event.preventDefault(); // Empêcher l'envoi classique du formulaire
+                const email = document.getElementById('email').value; // Récupération de l'email
+                const password = document.getElementById('password').value; // Récupération du mot de passe
+                checkCredentials(email, password, data); // Vérification des identifiants
+            };
+        });
 
         // Fonction pour vérifier les identifiants
         function checkCredentials(email, password, data) {
             let userFound = false;
             data.forEach(function(row) {
-                console.log(row); // Vérification des données de chaque ligne
                 if (row.Email === email && row['Mot de passe'] === password) {
                     userFound = true;
                     alert('Connexion réussie');
