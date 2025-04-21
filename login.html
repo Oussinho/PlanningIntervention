@@ -9,7 +9,7 @@
         // Fonction qui sera appelée pour récupérer les données depuis Google Sheets
         function init() {
             Tabletop.init({
-                key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/edit?usp=sharing', // Remplace avec ton lien de feuille
+                key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
                 callback: function(data, tabletop) {
                     console.log(data); // Affiche les données pour vérifier que tout fonctionne
                     // On appelle la fonction pour vérifier les identifiants après avoir chargé les données
