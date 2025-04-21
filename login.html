@@ -36,7 +36,12 @@
 
                 // Si l'utilisateur est authentifié
                 if (isAuthenticated) {
+                    // Stocker les informations de l'utilisateur dans localStorage
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userRole', userRole);
+
                     alert(`Connexion réussie ! Rôle: ${userRole}`);
+                    
                     // Rediriger en fonction du rôle
                     if (userRole === 'Admin') {
                         window.location.href = 'admin_dashboard.html';
