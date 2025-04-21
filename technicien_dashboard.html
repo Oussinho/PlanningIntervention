@@ -3,17 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intervenant</title>
-    <script>
-        // Vérifie si l'utilisateur est connecté
-        if (!localStorage.getItem('userEmail') || localStorage.getItem('userRole') !== 'Technicien') {
-            // Si non connecté ou rôle incorrect, redirige vers la page de login
-            window.location.href = "login.html";
+    <title>Dashboard - Technicien</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
         }
+        h1 {
+            color: #2c3e50;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .planning-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .planning-table th, .planning-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .planning-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .indisponibilite-form {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        // Simuler l'affichage du planning avec des données fictives
+        function afficherPlanning() {
+            // Exemple de planning de technicien
+            const missions = [
+                { date: '2025-04-22', mission: 'Réparation machine', heure: '10:00', lieu: 'Site A', statut: 'En attente' },
+                { date: '2025-04-23', mission: 'Maintenance système', heure: '14:00', lieu: 'Site B', statut: 'En attente' },
+                { date: '2025-04-24', mission: 'Installation équipement', heure: '09:00', lieu: 'Site C', statut: 'En attente' }
+            ];
+
+            let tableHtml = '';
+            missions.forEach(mission => {
+                tableHtml += `
+                    <tr>
+                        <td>${mission.date}</td>
+                        <td>${mission.mission}</td>
+                        <td>${mission.heure}</td>
+                        <td>${mission.lieu}</td>
+                        <td>${mission.statut}</td>
+                        <td><button class="button" onclick="confirmerMission('${mission.date}')">Confirmer</button></td>
+                        <td><button class="button" onclick="refuserMission('${mission.date}')">Refuser</button></td>
+                    </tr>
+                `;
+            });
+
+            $('#planning-table-body').html(tableHtml);
+        }
+
+        // Fonction pour confirmer une mission
+        function confirmerMission(date) {
+            alert('Mission du ' + date + ' confirmée !');
+        }
+
+        // Fonction pour refuser une mission
+        function refuserMission(date) {
+            alert('Mission du ' + date + ' refusée.');
+        }
+
+        // Fonction pour afficher les indisponibilités
+        function afficherIndisponibilite() {
+            const debut = document.getElementById('indisponibilite-debut').value;
+            const fin = document.getElementById('indisponibilite-fin').value;
+
+            if (debut && fin) {
+                alert(`Indisponibilité ajoutée du ${debut} au ${fin}`);
+            } else {
+                alert('Veuillez remplir les deux champs.');
+            }
+        }
+
+        $(document).ready(function() {
+            afficherPlanning();
+
+            // Lorsque l'utilisateur soumet le formulaire d'indisponibilité
+            $('#indisponibilite-form').on('submit', function(event) {
+                event.preventDefault();
+                afficherIndisponibilite();
+            });
+        });
     </script>
 </head>
 <body>
-    <h1>Page Intervenant</h1>
-    <!-- Contenu de la page Intervenant -->
+    <h1>📅 Dashboard Technicien</h1>
+
+    <h2>Planning des Missions</h2>
+    <table class="planning-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Mission</th>
+                <th>Heure</th>
+                <th>Lieu</th>
+                <th>Statut</th>
+                <th>Actions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="planning-table-body">
+            <!-- Les missions seront injectées ici via JavaScript -->
+        </tbody>
+    </table>
+
+    <h2>Ajouter une Période d'Indisponibilité</h2>
+    <form id="indisponibilite-form" class="indisponibilite-form">
+        <label for="indisponibilite-debut">Date de début :</label>
+        <input type="date" id="indisponibilite-debut" required><br><br>
+        
+        <label for="indisponibilite-fin">Date de fin :</label>
+        <input type="date" id="indisponibilite-fin" required><br><br>
+
+        <button class="button" type="submit">Ajouter Indisponibilité</button>
+    </form>
 </body>
 </html>
