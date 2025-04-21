@@ -112,6 +112,9 @@
 
                     alert(`Connexion réussie ! Rôle: ${userRole}`);
 
+                     localStorage.setItem("technicienId", row[4]); // Suppose que l'ID du technicien est dans la colonne E
+                     localStorage.setItem("userRole", userRole); // Stocker également le rôle si nécessaire
+                    
                     if (userRole === 'Admin') {
                         window.location.href = 'admin_dashboard.html';
                     } else if (userRole === 'Technicien') {
