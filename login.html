@@ -39,11 +39,11 @@
                     alert(`Connexion réussie ! Rôle: ${userRole}`);
                     // Rediriger en fonction du rôle
                     if (userRole === 'Admin') {
-                        window.location.href = 'admin_dashboard.html';
+                        window.location.href = 'admin.html';
                     } else if (userRole === 'Technicien') {
-                        window.location.href = 'technicien_dashboard.html';
+                        window.location.href = 'technicien.html';
                     } else if (userRole === 'Opérateur') {
-                        window.location.href = 'operateur_dashboard.html';
+                        window.location.href = 'operateur.html';
                     }
                 } else {
                     alert("Erreur de connexion : Email ou mot de passe incorrect.");
