@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Technicien</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script> <!-- Ajouter l'API Google Sheets -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,28 +46,59 @@
         }
     </style>
     <script>
-        // Simuler l'affichage du planning avec des données fictives
-        function afficherPlanning() {
-            // Exemple de planning de technicien
-            const missions = [
-                { date: '2025-04-22', mission: 'Réparation machine', heure: '10:00', lieu: 'Site A', statut: 'En attente' },
-                { date: '2025-04-23', mission: 'Maintenance système', heure: '14:00', lieu: 'Site B', statut: 'En attente' },
-                { date: '2025-04-24', mission: 'Installation équipement', heure: '09:00', lieu: 'Site C', statut: 'En attente' }
-            ];
+        const technicienConnecte = "Tech123"; // Exemple de Tech ID du technicien connecté
 
+        // API Google Sheets - Récupérer les données
+        function init() {
+            gapi.client.init({
+                apiKey: 'YOUR_GOOGLE_API_KEY',
+                clientId: 'YOUR_GOOGLE_CLIENT_ID',
+                scope: 'https://www.googleapis.com/auth/spreadsheets.readonly',
+            }).then(function() {
+                loadData();
+            });
+        }
+
+        function loadData() {
+            const spreadsheetId = 'YOUR_SPREADSHEET_ID'; // L'ID de votre feuille Google Sheets
+            const range = 'Planning!A1:F'; // Plage de données contenant les missions
+
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: spreadsheetId,
+                range: range,
+            }).then(function(response) {
+                const rows = response.result.values;
+                if (rows.length) {
+                    afficherPlanning(rows);
+                } else {
+                    console.log("Aucune donnée trouvée.");
+                }
+            });
+        }
+
+        // Affichage du planning filtré par technicien
+        function afficherPlanning(rows) {
             let tableHtml = '';
-            missions.forEach(mission => {
-                tableHtml += `
-                    <tr>
-                        <td>${mission.date}</td>
-                        <td>${mission.mission}</td>
-                        <td>${mission.heure}</td>
-                        <td>${mission.lieu}</td>
-                        <td>${mission.statut}</td>
-                        <td><button class="button" onclick="confirmerMission('${mission.date}')">Confirmer</button></td>
-                        <td><button class="button" onclick="refuserMission('${mission.date}')">Refuser</button></td>
-                    </tr>
-                `;
+            rows.forEach((row, index) => {
+                // La première ligne contient les en-têtes, donc on commence à partir de l'index 1
+                if (index === 0) return;
+
+                const [techID, date, mission, heure, lieu, statut] = row;
+
+                // Vérifier si le Tech ID correspond à celui du technicien connecté
+                if (techID === technicienConnecte) {
+                    tableHtml += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${mission}</td>
+                            <td>${heure}</td>
+                            <td>${lieu}</td>
+                            <td>${statut}</td>
+                            <td><button class="button" onclick="confirmerMission('${date}')">Confirmer</button></td>
+                            <td><button class="button" onclick="refuserMission('${date}')">Refuser</button></td>
+                        </tr>
+                    `;
+                }
             });
 
             $('#planning-table-body').html(tableHtml);
@@ -95,7 +127,7 @@
         }
 
         $(document).ready(function() {
-            afficherPlanning();
+            gapi.load('client:auth2', init);
 
             // Lorsque l'utilisateur soumet le formulaire d'indisponibilité
             $('#indisponibilite-form').on('submit', function(event) {
