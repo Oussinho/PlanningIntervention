@@ -3,59 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/src/tabletop.js"></script>
-    <script>
-        // Fonction qui sera appelée pour récupérer les données depuis Google Sheets
-        function init() {
-            Tabletop.init({
-                key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
-                callback: function(data, tabletop) {
-                    console.log(data); // Affiche les données pour vérifier que tout fonctionne
-                    // On appelle la fonction pour vérifier les identifiants après avoir chargé les données
-                    document.getElementById('loginForm').onsubmit = function(event) {
-                        event.preventDefault(); // Empêche l'envoi classique du formulaire
-                        const email = document.getElementById('email').value;
-                        const password = document.getElementById('password').value;
-                        checkCredentials(email, password, data); // Vérifie les identifiants
-                    };
-                },
-                simpleSheet: true
-            });
-        }
-
-        // Fonction pour vérifier si les identifiants sont corrects
-        function checkCredentials(email, password, data) {
-            const user = data.find(user => user.Email === email && user['Mot de passe'] === password);
-            if (user) {
-                // Si les identifiants sont corrects, stocke l'email et le rôle dans le localStorage
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userRole', user.Role);
-                // Redirige vers la page appropriée en fonction du rôle
-                window.location.href = user.Role + '.html';
-            } else {
-                // Si les identifiants sont incorrects
-                alert('Identifiants incorrects. Veuillez réessayer.');
-            }
-        }
-
-        // Initialisation de Tabletop lors du chargement de la page
-        window.onload = init;
-    </script>
+    <title>Login - Planning des Interventions</title>
 </head>
 <body>
-    <h1>Connexion</h1>
+    <h1>📋 Connexion au Planning des Interventions</h1>
+
+    <!-- Formulaire de connexion -->
     <form id="loginForm">
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
-        </div>
-        <div>
-            <label for="password">Mot de passe:</label>
-            <input type="password" id="password" required>
-        </div>
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" name="password" required>
+
         <button type="submit">Se connecter</button>
     </form>
+
+    <!-- Lien vers la feuille Google Sheets -->
+    <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0"></script>
+    <script>
+        // Chargement des données depuis Google Sheets
+        Tabletop.init({
+            key: 'https://docs.google.com/spreadsheets/d/1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg/gviz/tq?tqx=out:csv&sheet=Utilisateurs',
+            callback: function(data, tabletop) {
+                console.log("Données utilisateur chargées : ", data); // Vérification dans la console
+
+                // Assure-toi que les données sont sous la bonne forme
+                if (!Array.isArray(data) || data.length === 0) {
+                    console.error("Les données sont vides ou mal formatées !");
+                    return;
+                }
+
+                document.getElementById('loginForm').onsubmit = function(event) {
+                    event.preventDefault(); // Empêcher l'envoi classique du formulaire
+                    const email = document.getElementById('email').value; // Récupération de l'email
+                    const password = document.getElementById('password').value; // Récupération du mot de passe
+                    checkCredentials(email, password, data); // Vérification des identifiants
+                };
+            },
+            simpleSheet: true
+        });
+
+        // Fonction pour vérifier les identifiants
+        function checkCredentials(email, password, data) {
+            let userFound = false;
+            data.forEach(function(row) {
+                console.log(row); // Vérification des données de chaque ligne
+                if (row.Email === email && row['Mot de passe'] === password) {
+                    userFound = true;
+                    alert('Connexion réussie');
+                    // Redirection en fonction du rôle
+                    if (row.Role === 'Admin') {
+                        window.location.href = 'admin_dashboard.html'; // Page Admin
+                    } else if (row.Role === 'Technicien') {
+                        window.location.href = 'technician_dashboard.html'; // Page Technicien
+                    } else if (row.Role === 'Opérateur') {
+                        window.location.href = 'operator_dashboard.html'; // Page Opérateur
+                    }
+                }
+            });
+
+            if (!userFound) {
+                alert('Email ou mot de passe incorrect');
+            }
+        }
+    </script>
 </body>
 </html>
-
