@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input[type="email"], input[type="password"] {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+            max-width: 300px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Votre e-mail" required>
+        <br>
+        <input type="password" id="password" placeholder="Votre mot de passe" required>
+        <br>
+        <button type="submit">Se connecter</button>
+    </form>
+    <p class="error" id="error-message"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/src/tabletop.js"></script>
+    <script>
+        const spreadsheetID = '1rX8iqOxaW50tFGpVoYLP7sHGOTJbB2j5dIwi-kBA0Vg';  // Ton ID de spreadsheet
+        let users = [];
+
+        function onFormSubmit(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                localStorage.setItem('userEmail', email); // Stocke l'email dans localStorage
+                localStorage.setItem('userRole', user.role); // Stocke le rôle
+                window.location.href = `${user.role}.html`; // Redirige vers la page en fonction du rôle
+            } else {
+                document.getElementById('error-message').innerText = "Identifiants incorrects.";
+            }
+        }
+
+        function loadUsers() {
+            Tabletop.init({
+                key: spreadsheetID,
+                simpleSheet: true,
+                callback: function(data) {
+                    users = data.map(user => ({
+                        email: user['Email'],
+                        password: user['Mot de passe'],
+                        role: user['Role']
+                    }));
+                },
+                error: function(err) {
+                    console.error('Erreur lors du chargement des données:', err);
+                }
+            });
+        }
+
+        document.getElementById('login-form').addEventListener('submit', onFormSubmit);
+
+        window.onload = loadUsers;
+    </script>
+</body>
+</html>
